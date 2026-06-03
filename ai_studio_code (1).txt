@@ -1,0 +1,124 @@
+-- [[ ZHYTRIZES STANDALONE ANTI-AFK - FIXED SPACING ]] --
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+
+-- 1. Remove old UI if it exists
+if CoreGui:FindFirstChild("ZhyAntiAfkStandalone") then
+    CoreGui.ZhyAntiAfkStandalone:Destroy()
+end
+
+-- 2. Create the GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ZhyAntiAfkStandalone"
+ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.Position = UDim2.new(0.1, 0, 0.1, 0)
+MainFrame.Size = UDim2.new(0, 220, 0, 90) -- Increased width to 220 for better spacing
+MainFrame.Active = true
+MainFrame.Draggable = true 
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 6)
+
+-- 3. Header & Credits (Gray)
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Parent = MainFrame
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Position = UDim2.new(0, 12, 0, 5)
+TitleLabel.Size = UDim2.new(0, 170, 0, 15)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.Text = "Anti Afk V1 By ZhyTrizes"
+TitleLabel.TextColor3 = Color3.fromRGB(150, 150, 150) -- Gray
+TitleLabel.TextSize = 12
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Parent = MainFrame
+CloseButton.BackgroundTransparency = 1
+CloseButton.Position = UDim2.new(1, -25, 0, 2)
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 50, 50)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+
+local Line = Instance.new("Frame")
+Line.Parent = MainFrame
+Line.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+Line.Position = UDim2.new(0, 10, 0, 24)
+Line.Size = UDim2.new(1, -20, 0, 1)
+
+-- 4. Stats Labels (FIXED SPACING)
+local PingLabel = Instance.new("TextLabel")
+PingLabel.Parent = MainFrame
+PingLabel.BackgroundTransparency = 1
+PingLabel.Position = UDim2.new(0, 15, 0, 35) -- Moved to 15
+PingLabel.Size = UDim2.new(0, 70, 0, 15)
+PingLabel.Font = Enum.Font.SourceSans
+PingLabel.TextColor3 = Color3.new(1, 1, 1)
+PingLabel.TextSize = 11
+PingLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local FpsLabel = Instance.new("TextLabel")
+FpsLabel.Parent = MainFrame
+FpsLabel.BackgroundTransparency = 1
+FpsLabel.Position = UDim2.new(0, 125, 0, 35) -- Moved to 125 to create a large gap from Ping
+FpsLabel.Size = UDim2.new(0, 70, 0, 15)
+FpsLabel.Font = Enum.Font.SourceSans
+FpsLabel.TextColor3 = Color3.new(1, 1, 1)
+FpsLabel.TextSize = 11
+FpsLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Parent = MainFrame
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Position = UDim2.new(0, 15, 0, 62)
+StatusLabel.Size = UDim2.new(0, 130, 0, 15)
+StatusLabel.Font = Enum.Font.SourceSansBold
+StatusLabel.Text = "Anti-Afk Auto Enabled"
+StatusLabel.TextColor3 = Color3.new(1, 1, 1)
+StatusLabel.TextSize = 11
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- 5. Timer (Green)
+local TimerLabel = Instance.new("TextLabel")
+TimerLabel.Parent = MainFrame
+TimerLabel.BackgroundTransparency = 1
+TimerLabel.Position = UDim2.new(1, -75, 0, 62)
+TimerLabel.Size = UDim2.new(0, 60, 0, 15)
+TimerLabel.Font = Enum.Font.SourceSansBold
+TimerLabel.Text = "0:0:0"
+TimerLabel.TextColor3 = Color3.fromRGB(0, 255, 0) -- Green
+TimerLabel.TextSize = 12
+TimerLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+-- 6. Anti-AFK Logic
+Player.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+-- 7. Loop
+task.spawn(function()
+    local s, m, h = 0, 0, 0
+    while task.wait(1) do
+        if not ScreenGui.Parent then break end
+        
+        local stats = game:GetService("Stats")
+        local ping = tonumber(stats.PerformanceStats.Ping:GetValue())
+        PingLabel.Text = "Ping: " .. math.floor(ping) .. "ms"
+        FpsLabel.Text = "FPS: " .. math.floor(1/RunService.RenderStepped:Wait())
+        
+        s = s + 1
+        if s >= 60 then s = 0; m = m + 1 end
+        if m >= 60 then m = 0; h = h + 1 end
+        TimerLabel.Text = h..":"..m..":"..s
+    end
+end)
