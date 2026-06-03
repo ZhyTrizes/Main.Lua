@@ -1,17 +1,13 @@
--- [[ ZHYTRIZES STANDALONE ANTI-AFK - FIXED SPACING ]] --
-
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
 local VirtualUser = game:GetService("VirtualUser")
 
--- 1. Remove old UI if it exists
 if CoreGui:FindFirstChild("ZhyAntiAfkStandalone") then
     CoreGui.ZhyAntiAfkStandalone:Destroy()
 end
 
--- 2. Create the GUI
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ZhyAntiAfkStandalone"
 ScreenGui.Parent = CoreGui
@@ -27,7 +23,6 @@ MainFrame.Active = true
 MainFrame.Draggable = true 
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 6)
 
--- 3. Header & Credits (Gray)
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Parent = MainFrame
 TitleLabel.BackgroundTransparency = 1
@@ -55,7 +50,6 @@ Line.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 Line.Position = UDim2.new(0, 10, 0, 24)
 Line.Size = UDim2.new(1, -20, 0, 1)
 
--- 4. Stats Labels (FIXED SPACING)
 local PingLabel = Instance.new("TextLabel")
 PingLabel.Parent = MainFrame
 PingLabel.BackgroundTransparency = 1
@@ -87,7 +81,6 @@ StatusLabel.TextColor3 = Color3.new(1, 1, 1)
 StatusLabel.TextSize = 11
 StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
 
--- 5. Timer (Green)
 local TimerLabel = Instance.new("TextLabel")
 TimerLabel.Parent = MainFrame
 TimerLabel.BackgroundTransparency = 1
@@ -99,13 +92,11 @@ TimerLabel.TextColor3 = Color3.fromRGB(0, 255, 0) -- Green
 TimerLabel.TextSize = 12
 TimerLabel.TextXAlignment = Enum.TextXAlignment.Right
 
--- 6. Anti-AFK Logic
 Player.Idled:Connect(function()
     VirtualUser:CaptureController()
     VirtualUser:ClickButton2(Vector2.new())
 end)
 
--- 7. Loop
 task.spawn(function()
     local s, m, h = 0, 0, 0
     while task.wait(1) do
